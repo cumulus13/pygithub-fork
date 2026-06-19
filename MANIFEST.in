@@ -1,0 +1,19 @@
+include README.md
+include LICENSE
+include CHANGELOG.md
+include requirements.txt
+include pyproject.toml
+include setup.py
+include setup.cfg
+recursive-include src *.py
+recursive-include docs *.rst *.md
+recursive-exclude * __pycache__
+recursive-exclude * *.py[co]
+recursive-exclude * .DS_Store
+prune test
+prune .git
+prune .github
+global-exclude *.pyc *.pyo
+
+# Added entries (1 items) - 2026-06-19 06:06:08
+exclude test/

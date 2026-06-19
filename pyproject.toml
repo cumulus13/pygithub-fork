@@ -1,0 +1,103 @@
+[build-system]
+requires = [
+    "hatchling",
+]
+build-backend = "hatchling.build"
+
+[project]
+name = "github-forker"
+version = "1.0.1"
+description = "Production-ready GitHub repository forking built on PyGithub — retry, backoff, readiness polling, thread pool, background jobs, upstream remotes, and webhooks."
+readme = "README.md"
+authors = [
+    { name = "Hadi Cahyadi", email = "cumulus13@gmail.com" },
+]
+keywords = [
+    "github",
+    "fork",
+    "pygithub",
+    "git",
+    "repository",
+    "automation",
+    "devops",
+    "api",
+]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Software Development :: Version Control :: Git",
+]
+requires-python = ">=3.9"
+dependencies = [
+    "PyGithub>=1.55",
+]
+
+[project.license]
+text = "MIT"
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+    "pytest-cov>=4.0",
+    "build",
+    "twine",
+    "ruff",
+    "mypy",
+]
+
+[project.urls]
+Homepage = "https://github.com/cumulus13/pygithub-fork"
+Repository = "https://github.com/cumulus13/pygithub-fork"
+"Bug Tracker" = "https://github.com/cumulus13/pygithub-fork/issues"
+Changelog = "https://github.com/cumulus13/pygithub-fork/blob/main/CHANGELOG.md"
+
+[tool.hatch.build.targets.wheel]
+packages = [
+    "src/pygithub_fork",
+]
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "src/",
+    "tests/",
+    "docs/",
+    "README.md",
+    "CHANGELOG.md",
+    "LICENSE",
+    "Makefile",
+]
+
+[tool.pytest.ini_options]
+testpaths = [
+    "tests",
+]
+addopts = "-v --tb=short"
+
+[tool.coverage.run]
+source = [
+    "src/pygithub_fork",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py39"
+select = [
+    "E",
+    "F",
+    "I",
+    "UP",
+    "B",
+]
+
+[tool.mypy]
+python_version = "3.9"
+strict = false
+ignore_missing_imports = true
