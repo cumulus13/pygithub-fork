@@ -1,7 +1,7 @@
 # github-forker
 
-[![PyPI version](https://badge.fury.io/py/pygithub-fork.svg)](https://pypi.org/project/pygithub-fork/)
-[![Python](https://img.shields.io/pypi/pyversions/pygithub-fork)](https://pypi.org/project/pygithub-fork/)
+[![PyPI version](https://badge.fury.io/py/github-forker.svg)](https://pypi.org/project/github-forker/)
+[![Python](https://img.shields.io/pypi/pyversions/github-forker)](https://pypi.org/project/github-forker/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 Production-ready GitHub repository forking built on [PyGithub](https://github.com/PyGithub/PyGithub).

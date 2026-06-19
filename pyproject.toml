@@ -6,7 +6,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "github-forker"
-version = "1.0.1"
+version = "1.0.2"
 description = "Production-ready GitHub repository forking built on PyGithub — retry, backoff, readiness polling, thread pool, background jobs, upstream remotes, and webhooks."
 readme = "README.md"
 authors = [
