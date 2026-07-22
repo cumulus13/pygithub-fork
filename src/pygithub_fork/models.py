@@ -29,6 +29,7 @@ class ForkRequest:
     organization: Optional[Union[str, Organization]] = None
     name: Optional[str] = None
     default_branch_only: Optional[bool] = None
+    private: Optional[bool] = None                       # Create fork as private repository
     # Per-request post-fork actions (override global config when set)
     add_upstream_remote: Optional[bool] = None   # git remote add upstream <clone_url>
     local_path: Optional[str] = None             # path to local clone for remote setup
@@ -91,6 +92,11 @@ class ForkerConfig:
     pool_workers: int = 4
     """Max concurrent forks.  GitHub secondary rate limits kick in when you
     fork too many repos in rapid succession; keep this ≤ 4 for safety."""
+
+    # ---- Fork visibility ----
+    private: bool = False
+    """If True, creates forks as private repositories (requires org/user-level support).
+    For private source repositories, the fork will be private by default."""
 
     # ---- Post-fork: upstream remote ----
     add_upstream_remote: bool = False

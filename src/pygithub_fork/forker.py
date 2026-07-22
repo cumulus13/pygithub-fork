@@ -19,6 +19,7 @@ Key capabilities on top of a bare PyGithub create_fork() call
    `git remote add upstream <url>` in a local clone.
 7. **Post-fork webhook** — optionally registers a GitHub webhook on the
    freshly created fork.
+8. **Private forks** — supports creating private forks from private/public repos.
 """
 from __future__ import annotations
 
@@ -178,6 +179,9 @@ class GitHubForker:
 
         # --- bulk fork with thread pool ---
         results = forker.fork_many(["owner/a", "owner/b", "owner/c"])
+
+        # --- fork private repository to private ---
+        result = forker.fork("private-owner/private-repo", private=True)
     """
 
     def __init__(self, client: Github, config: Optional[ForkerConfig] = None) -> None:
@@ -226,6 +230,7 @@ class GitHubForker:
         organization: Optional[Union[str, Organization]] = None,
         name: Optional[str] = None,
         default_branch_only: Optional[bool] = None,
+        private: Optional[bool] = None,
         # Per-call overrides (use config for global defaults)
         add_upstream_remote: Optional[bool] = None,
         local_path: Optional[str] = None,
@@ -252,6 +257,10 @@ class GitHubForker:
             the same upstream into multiple org targets).
         default_branch_only:
             When True, GitHub copies only the default branch.
+        private:
+            When True, creates a private fork. Requires organization or user
+            with permission to fork private repos. When False, fork inherits
+            source repo visibility. Default uses config.private.
         add_upstream_remote:
             Override config.add_upstream_remote for this call.
         local_path:
@@ -303,6 +312,7 @@ class GitHubForker:
                 organization=organization,
                 name=name,
                 default_branch_only=default_branch_only,
+                private=private,
             )
             result = ForkResult(
                 source_full_name=full_name,
@@ -364,6 +374,7 @@ class GitHubForker:
         organization: Optional[Union[str, Organization]] = None,
         name: Optional[str] = None,
         default_branch_only: Optional[bool] = None,
+        private: Optional[bool] = None,
         add_upstream_remote: Optional[bool] = None,
         local_path: Optional[str] = None,
         register_webhook: Optional[bool] = None,
@@ -410,6 +421,7 @@ class GitHubForker:
             organization=organization,
             name=name,
             default_branch_only=default_branch_only,
+            private=private,
             add_upstream_remote=add_upstream_remote,
             local_path=local_path,
             register_webhook=register_webhook,
@@ -427,6 +439,7 @@ class GitHubForker:
         organization: Optional[Union[str, Organization]] = None,
         name: Optional[str] = None,
         default_branch_only: Optional[bool] = None,
+        private: Optional[bool] = None,
         add_upstream_remote: Optional[bool] = None,
         local_path: Optional[str] = None,
         register_webhook: Optional[bool] = None,
@@ -462,7 +475,7 @@ class GitHubForker:
             Run forks concurrently (default True).
         stop_on_error : bool
             Abort the batch on the first error (default False).
-        organization, name, default_branch_only, add_upstream_remote,
+        organization, name, default_branch_only, private, add_upstream_remote,
         local_path, register_webhook, webhook_url, webhook_events :
             Shared defaults for all items; overridden per-item by ForkRequest.
 
@@ -476,6 +489,7 @@ class GitHubForker:
             organization=organization,
             name=name,
             default_branch_only=default_branch_only,
+            private=private,
             add_upstream_remote=add_upstream_remote,
             local_path=local_path,
             register_webhook=register_webhook,
@@ -497,6 +511,7 @@ class GitHubForker:
         organization: Optional[Union[str, Organization]] = None,
         name: Optional[str] = None,
         default_branch_only: Optional[bool] = None,
+        private: Optional[bool] = None,
         add_upstream_remote: Optional[bool] = None,
         local_path: Optional[str] = None,
         register_webhook: Optional[bool] = None,
@@ -518,6 +533,7 @@ class GitHubForker:
             organization=organization,
             name=name,
             default_branch_only=default_branch_only,
+            private=private,
             add_upstream_remote=add_upstream_remote,
             local_path=local_path,
             register_webhook=register_webhook,
@@ -598,6 +614,7 @@ class GitHubForker:
         organization: Optional[Union[str, Organization]],
         name: Optional[str],
         default_branch_only: Optional[bool],
+        private: Optional[bool],
     ) -> tuple[Repository, int]:
         cfg = self.config
         kwargs: dict = {
@@ -607,6 +624,12 @@ class GitHubForker:
                 default_branch_only if default_branch_only is not None else NotSet
             ),
         }
+        
+        # Add private parameter if explicitly set or if config.private is True
+        if private is not None:
+            kwargs["private"] = private
+        elif cfg.private:
+            kwargs["private"] = True
 
         last_exc: Optional[Exception] = None
         for attempt in range(1, cfg.max_retries + 1):
@@ -860,6 +883,7 @@ class GitHubForker:
                     organization=item.organization if item.organization is not None else defaults.get("organization"),
                     name=item.name if item.name is not None else defaults.get("name"),
                     default_branch_only=item.default_branch_only if item.default_branch_only is not None else defaults.get("default_branch_only"),
+                    private=item.private if item.private is not None else defaults.get("private"),
                     add_upstream_remote=item.add_upstream_remote if item.add_upstream_remote is not None else defaults.get("add_upstream_remote"),
                     local_path=item.local_path if item.local_path is not None else defaults.get("local_path"),
                     register_webhook=item.register_webhook if item.register_webhook is not None else defaults.get("register_webhook"),
@@ -883,6 +907,7 @@ class GitHubForker:
                 organization=req.organization,
                 name=req.name,
                 default_branch_only=req.default_branch_only,
+                private=req.private,
                 add_upstream_remote=req.add_upstream_remote,
                 local_path=req.local_path,
                 register_webhook=req.register_webhook,
